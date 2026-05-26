@@ -86,7 +86,7 @@ h1 em{font-style:italic;font-family:'Instrument Sans',sans-serif;font-weight:400
 .sec-count{font-size:0.7rem;color:var(--muted);background:var(--surface2);border:1px solid var(--border);padding:0.15rem 0.55rem;border-radius:99px}
 
 /* cards */
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:0.85rem;margin-bottom:1.5rem}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:0.85rem;margin-bottom:1.5rem;min-height:100px}
 @media(max-width:580px){.cards{grid-template-columns:1fr}}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.15rem;position:relative;overflow:hidden;transition:border-color 0.2s,transform 0.2s;cursor:default}
 .card:not(.locked):hover{border-color:rgba(108,92,231,0.4);transform:translateY(-2px)}
@@ -472,7 +472,8 @@ function renderPreview(data) {
 
   const opps = data.opportunities || [];
   document.getElementById('previewCountEl').textContent = `2 of ${data.totalOpportunities || 60}+ shown`;
-  document.getElementById('previewCards').innerHTML = opps.slice(0, 2).map(o => cardHTML(o, false)).join('');
+  console.log('Preview opps:', opps.length, opps);
+  document.getElementById('previewCards').innerHTML = opps.slice(0, 2).map(o => cardHTML(o, false)).join('') || '<p style="color:red">No cards</p>';
 
   // Locked teaser cards (reuse first 2 preview as blurred ghost)
   document.getElementById('lockedMore').textContent = (data.totalOpportunities || 60) - 2;
@@ -484,6 +485,7 @@ function renderPreview(data) {
 
 // ─── CARD HTML ────────────────────────────────────────────────────
 function cardHTML(o, locked) {
+  if (!o || !o.title) return '';
   const demClass = o.demand === 'High' ? 'bg' : o.demand === 'Competitive' ? 'br' : 'by';
   const emps = (o.employers || []).slice(0, 4).map(e => `<span class="emp">${e}</span>`).join('');
   const lock = locked ? `<div class="lock-ov"><div class="lock-ov-icon">🔒</div><div class="lock-ov-txt">Unlock for £1</div></div>` : '';
@@ -605,10 +607,12 @@ async function unlockAll() {
   document.getElementById('fullCards').innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:2.5rem"><div class="spin"></div><div class="load-lbl">Loading all opportunities for ${currentDegree}…</div></div>`;
 
   try {
-    const token = localStorage.getItem('gm_token') || 'demo_token_64chars_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+    const token = localStorage.getItem('gm_token') || 'a'.repeat(64);
     const full = await callCareersAPI({ degree: currentDegree, mode: 'full', accessToken: token });
+    console.log('Full results:', full);
     renderFull(full);
   } catch (e) {
+    console.error('Unlock error:', e);
     document.getElementById('fullCards').innerHTML = '<div style="grid-column:1/-1;color:var(--red);text-align:center;padding:2rem">Failed to load. Please refresh.</div>';
   }
 }
