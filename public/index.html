@@ -343,15 +343,12 @@ h1 em{font-style:italic;font-family:'Instrument Sans',sans-serif;font-weight:400
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────
 // When you deploy: replace these with your actual URLs and key
-const API_BASE = window.location.hostname === 'localhost'
-  ? 'http://localhost:3000'
-  : 'https://your-app.vercel.app'; // ← change to your Vercel URL
+const API_BASE = 'https://gradmap-plum.vercel.app';
 
 // Your Stripe publishable key (safe to put in frontend)
 // Get this from stripe.com/dashboard → Developers → API Keys
-const STRIPE_PK = 'pk_test_YOUR_STRIPE_PUBLISHABLE_KEY'; // ← replace
 
-// ─── STATE ────────────────────────────────────────────────────────
+const STRIPE_PK = 'pk_test_51TbTtMEVv8982KHmJ9RgJAJ3DHttBi82bHf7kBRm2uq7F6tUhc8xrHrKc1WyyBZjdLc0NC74QVzyEMG6ykf2wxVz00eroqoUaq';
 let currentDegree = '';
 let allData = null;
 let stripe = null;
