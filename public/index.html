@@ -452,34 +452,15 @@ async function loadPreview(body) {
 }
 
 // ─── API CALL ─────────────────────────────────────────────────────
-// In production: calls your /api/careers backend
-// In demo (running as single HTML file): calls Anthropic directly
 async function callCareersAPI(body) {
-  const isPreview = body.mode !== 'full';
-  const degree = body.degree || 'General Graduate';
-  const prompt = isPreview
-    ? 'UK careers expert. For "' + degree + '" degree, give 2 opportunities. Return ONLY JSON: {"summary":"one sentence about prospects","totalOpportunities":62,"opportunities":[{"id":1,"category":"Graduate Career","title":"Specific Job Title","salary":"£28,000-£38,000","demand":"High","description":"2 sentences about this role and why ' + degree + ' graduates are suited.","employers":["Real UK Employer 1","Real UK Employer 2","Real UK Employer 3"],"entryRoute":"Direct application"},{"id":2,"category":"Internship","title":"Specific Internship","salary":"£20,000 pro rata","demand":"Competitive","description":"2 sentences about this opportunity.","employers":["Real UK Employer 1","Real UK Employer 2","Real UK Employer 3"],"entryRoute":"Apply Sept-Nov"}]}'
-    : 'UK careers expert. For "' + degree + '" degree graduate, give 36 opportunities. Return ONLY JSON: {"summary":"2 sentences","categories":["Graduate Careers","Internships","Year Placements","Graduate Schemes","Further Study","Alternative Paths"],"opportunities":[{"id":1,"category":"Graduate Careers","title":"specific role","salary":"£X,000-£Y,000","demand":"High","description":"2-3 sentences","employers":["Real UK Org 1","Real UK Org 2","Real UK Org 3"],"entryRoute":"how to get in","timeframe":"when to apply"}]} Generate 36 items across all 6 categories. Real UK employers only. Accurate 2024 salaries. Return ONLY the JSON.';
-
-  const r = await fetch('https://api.anthropic.com/v1/messages', {
+  const r = await fetch('/api/careers', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': ANTHROPIC_KEY,
-      'anthropic-version': '2023-06-01'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: isPreview ? 1000 : 4000,
-      messages: [{ role: 'user', content: prompt }]
-    })
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body)
   });
-  const d = await r.json();
-  const text = d.content?.map(b => b.text || '').join('') || '';
-  return JSON.parse(text.replace(/```json|```/g, '').trim());
+  if (!r.ok) throw new Error('API error: ' + r.status);
+  return r.json();
 }
-
-// ─── RENDER PREVIEW ───────────────────────────────────────────────
 function renderPreview(data) {
   document.getElementById('loadingEl').style.display = 'none';
   document.getElementById('resContent').style.display = 'block';
