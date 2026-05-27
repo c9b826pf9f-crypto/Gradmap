@@ -21,8 +21,8 @@ module.exports = async function handler(req, res) {
         'x-api-key': process.env.ANTHROPIC_API_KEY,
         'anthropic-version': '2023-06-01',
       },
-      body: JSON.stringify({
-model: 'claude-3-5-haiku-20241022',
+body: JSON.stringify({
+        model: 'claude-3-5-haiku-20241022',
         max_tokens: isPreview ? 1000 : 4000,
         messages: [{ role: 'user', content: prompt }],
       }),
