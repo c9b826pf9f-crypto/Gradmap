@@ -25,4 +25,4 @@ module.exports = async function handler(req, res) {
     const data = await r.json();
     if (data.error) return res.status(500).json({ error: data.error.message });
     const text = (data.content || []).map(function(b) { return b.text || ''; }).join('');
-    const clean = text.replace(/```json/g, '').replace(/```
+const clean = text.split('```json').join('').split('```').join('').trim();
