@@ -40,8 +40,7 @@ module.exports = async function handler(req, res) {
       text += content[i].text || '';
     }
 
-    text = text.split('```json').join('').split('```').join('').trim();
-
+text = text.split('\x60\x60\x60json').join('').split('\x60\x60\x60').join('').trim();
     if (!text) {
       return res.status(500).json({ error: 'empty response', debug: JSON.stringify(data).substring(0, 300) });
     }
