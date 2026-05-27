@@ -42,15 +42,17 @@ export default async function handler(req) {
     }),
   });
 
-  const data = await response.json();
-  const content = data.content || [];
-  let text = '';
-  for (let i = 0; i < content.length; i++) {
-    text += content[i].text || '';
-  }
-  const clean = text.replace(/```json/g, '').replace(/```/g, '').trim();
+ const data = await response.json();
+console.log('Anthropic response:', JSON.stringify(data).substring(0, 500));
+const content = data.content || [];
+let text = '';
+for (let i = 0; i < content.length; i++) {
+  text += content[i].text || '';
+}
+const clean = text.replace(/```json/g, '').replace(/```/g, '').trim();
+const result = clean || '{"error":"empty response","data":' + JSON.stringify(data).substring(0,200) + '}';
 
-  return new Response(clean, {
+return new Response(result, {
     headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
