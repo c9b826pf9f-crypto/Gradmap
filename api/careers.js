@@ -41,12 +41,16 @@ module.exports = async function handler(req, res) {
     }
 
 text = text.split('\x60\x60\x60json').join('').split('\x60\x60\x60').join('').trim();
-    if (!text) {
-      return res.status(500).json({ error: 'empty response', debug: JSON.stringify(data).substring(0, 300) });
+  if (!text) {
+      return res.status(500).json({ error: 'empty', raw: JSON.stringify(data).substring(0, 500) });
     }
 
-    var parsed = JSON.parse(text);
-    return res.status(200).json(parsed);
+    try {
+      var parsed = JSON.parse(text);
+      return res.status(200).json(parsed);
+    } catch (parseErr) {
+      return res.status(500).json({ error: 'parse failed', text: text.substring(0, 500) });
+    }
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
